@@ -4,7 +4,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
-import  Button  from "@/components/ui/button"
+import Button from "@/components/ui/button" // ✅ correct import
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -21,18 +21,10 @@ export default function Navbar() {
 
         {/* Desktop Links */}
         <div className="hidden md:flex space-x-8">
-          <Link href="/" className="text-gray-700 hover:text-green-600">
-            Home
-          </Link>
-          <Link href="/recipes" className="text-gray-700 hover:text-green-600">
-            Recipes
-          </Link>
-          <Link href="/about" className="text-gray-700 hover:text-green-600">
-            About
-          </Link>
-          <Link href="/contact" className="text-gray-700 hover:text-green-600">
-            Contact
-          </Link>
+          <Link href="/" className="text-gray-700 hover:text-green-600">Home</Link>
+          <Link href="/recipes" className="text-gray-700 hover:text-green-600">Recipes</Link>
+          <Link href="/about" className="text-gray-700 hover:text-green-600">About</Link>
+          <Link href="/contact" className="text-gray-700 hover:text-green-600">Contact</Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -43,25 +35,19 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Dropdown */}
-      {isOpen && (
-        <div className="md:hidden bg-white shadow-md">
-          <div className="flex flex-col space-y-4 px-6 py-4">
-            <Link href="/" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>
-              Home
-            </Link>
-            <Link href="/recipes" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>
-              Recipes
-            </Link>
-            <Link href="/about" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>
-              About
-            </Link>
-            <Link href="/contact" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>
-              Contact
-            </Link>
-          </div>
+      {/* Mobile Dropdown with animation */}
+      <div
+        className={`md:hidden bg-white shadow-md overflow-hidden transition-all duration-300 ${
+          isOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="flex flex-col space-y-4 px-6 py-4">
+          <Link href="/" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>Home</Link>
+          <Link href="/recipes" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>Recipes</Link>
+          <Link href="/about" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>About</Link>
+          <Link href="/contact" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>Contact</Link>
         </div>
-      )}
+      </div>
     </nav>
   )
 }
