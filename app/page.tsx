@@ -1,5 +1,4 @@
-import Image from "next/image";
-import { supabase } from "../lib/supabase";
+
 import FetchPosts from "@/components/fetchPosts";
 import Navbar from "@/components/nav";
 
@@ -12,7 +11,7 @@ export default async function Home() {
 
       <main className="w-full flex flex-col pt-40 py-14 px-5 items-center text-center">
         <h1 className="text-5xl font-bold mb-20 hero">
-          Welcome to Abike's Recipe Blog
+          Welcome to Abike&apos;s Recipe Blog
         </h1>
 
         <FetchPosts />
