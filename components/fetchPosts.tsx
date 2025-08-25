@@ -3,7 +3,6 @@
 import { Timestamp } from "next/dist/server/lib/cache-handlers/types";
 import { supabase } from "../lib/supabase";
 import { useEffect, useState } from "react";
-import Image from "next/image";
 
 type Post = {
   id: string;
