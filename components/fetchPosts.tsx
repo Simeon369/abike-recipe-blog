@@ -25,7 +25,7 @@ export default function FetchPosts() {
     fetchPosts();
   }, []);
 
-  const changeDateFormat = (timeStamp: any) => {
+  const changeDateFormat = (timeStamp: Timestamp) => {
     const dateObj = new Date(timeStamp);
     const month = ['Jan', 'Feb', 'Mar','Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
