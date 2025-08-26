@@ -1,7 +1,4 @@
-"use client";
-
-import { supabase } from "../lib/supabase";
-import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
 type Post = {
@@ -13,29 +10,17 @@ type Post = {
   created_at: string;
 };
 
-export default function FetchPosts() {
-  const [posts, setPosts] = useState<Post[]>([]);
+export default async function FetchPosts() {
+  // fetch posts directly on the server
+  const { data: posts, error } = await supabase
+    .from("posts")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  useEffect(() => {
-
-    
-    const fetchPosts = async () => {
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error(error);
-      } else if (data) {
-        setPosts(data);
-      }
-
-      console.log(data);
-      
-    };
-    fetchPosts();
-  }, []);
+  if (error) {
+    console.error("Error fetching posts:", error.message);
+    return <p className="text-red-500">Failed to load posts.</p>;
+  }
 
   const changeDateFormat = (timeStamp: string) => {
     const dateObj = new Date(timeStamp);
@@ -48,15 +33,19 @@ export default function FetchPosts() {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-4 gap-10">
-      {posts.map((post) => (
+      {posts?.map((post) => (
         <Link
           href={`/recipes/${post.slug}`}
-          className="shadow-lg bg-white rounded-xl hover:shadow-xl hover:scale-[1.01] transition-all"
           key={post.id}
+          className="shadow-lg bg-white rounded-xl hover:shadow-xl hover:scale-[1.01] transition-all"
         >
-          <img className="rounded-t-xl w-full h-48 object-cover" src={post.imageUrl} alt={post.title} />
+          <img
+            className="rounded-t-xl w-full h-48 object-cover"
+            src={post.imageUrl}
+            alt={post.title}
+          />
           <div className="flex flex-col items-start p-4">
-            <p className="text-xs">{changeDateFormat(post.created_at)}</p>
+            <p className="text-xs text-gray-500">{changeDateFormat(post.created_at)}</p>
             <h1 className="text-lg font-bold">{post.title}</h1>
           </div>
         </Link>
