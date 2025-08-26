@@ -42,10 +42,10 @@ export default function Navbar() {
         }`}
       >
         <div className="flex flex-col space-y-4 px-6 py-4">
-          <Link href="/" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>Home</Link>
-          <Link href="/recipe" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>Recipes</Link>
-          <Link href="/about" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>About</Link>
-          <Link href="/contact" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>Contact</Link>
+          <Link href="/" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>Home</Link>
+          <Link href="/recipes" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>Recipes</Link>
+          <Link href="/about" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>About</Link>
+          <Link href="/contact" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>Contact</Link>
         </div>
       </div>
     </nav>
