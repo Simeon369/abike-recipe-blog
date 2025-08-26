@@ -50,7 +50,7 @@ export default function FetchPosts() {
     <div className="grid grid-cols-1 sm:grid-cols-4 gap-10">
       {posts.map((post) => (
         <Link
-          href={`/recipe/${post.slug}`}
+          href={`/recipes/${post.slug}`}
           className="shadow-lg bg-white rounded-xl hover:shadow-xl hover:scale-[1.01] transition-all"
           key={post.id}
         >
