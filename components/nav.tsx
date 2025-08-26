@@ -15,16 +15,16 @@ export default function Navbar() {
     <nav className="w-full shadow-md bg-white fixed top-0 left-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
-        <Link href="/" className="text-2xl font-bold text-green-600">
+        <Link href="/" className="text-2xl font-bold text-accent">
           Abike&apos;s Recipe Blog
         </Link>
 
         {/* Desktop Links */}
         <div className="hidden md:flex space-x-8">
-          <Link href="/" className="text-gray-700 hover:text-green-600">Home</Link>
-          <Link href="/recipes" className="text-gray-700 hover:text-green-600">Recipes</Link>
-          <Link href="/about" className="text-gray-700 hover:text-green-600">About</Link>
-          <Link href="/contact" className="text-gray-700 hover:text-green-600">Contact</Link>
+          <Link href="/" className="text-gray-700 hover:text-accent">Home</Link>
+          <Link href="/recipes" className="text-gray-700 hover:text-accent">Recipes</Link>
+          <Link href="/about" className="text-gray-700 hover:text-accent">About</Link>
+          <Link href="/contact" className="text-gray-700 hover:text-accent">Contact</Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -43,7 +43,7 @@ export default function Navbar() {
       >
         <div className="flex flex-col space-y-4 px-6 py-4">
           <Link href="/" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>Home</Link>
-          <Link href="/recipes" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>Recipes</Link>
+          <Link href="/recipe" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>Recipes</Link>
           <Link href="/about" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>About</Link>
           <Link href="/contact" className="text-gray-700 hover:text-green-600" onClick={toggleMenu}>Contact</Link>
         </div>
