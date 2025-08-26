@@ -102,7 +102,7 @@ export default function Home() {
                   )}
                   <div className="p-4 text-left">
                     <h3 className="text-xl font-bold mb-2">{recipe.title}</h3>
-                    <p className="text-gray-600 line-clamp-2">{recipe.content}</p>
+                    <p className="text-gray-600 line-clamp-2">{new Date(recipe.created_at).toLocaleDateString()}</p>
                   </div>
                 </a>
               ))}
