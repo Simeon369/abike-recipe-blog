@@ -4,16 +4,24 @@ import { useState } from "react";
 import { supabase } from "../lib/supabase";
 
 export default function AddPost() {
+    const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
 
+  function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-") // replace non-alphanumeric with "-"
+    .replace(/^-+|-+$/g, "");   // remove starting/ending "-"
+}
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if(!title || !content || !imageUrl) {
+    if (!title || !content || !imageUrl) {
       alert("Please fill in all fields");
-      return
+      return;
     }
 
     const { data, error } = await supabase
@@ -23,6 +31,7 @@ export default function AddPost() {
           title: title,
           content: content,
           imageUrl: imageUrl,
+          slug: generateSlug(title),
         },
       ]);
 
@@ -35,11 +44,15 @@ export default function AddPost() {
     setTitle("");
     setContent("");
     setImageUrl("");
+    setIsAdding(false);
   };
 
   return (
     <div className="">
-      <form action="" className="flex flex-col gap-4" onSubmit={handleSubmit}>
+
+        {isAdding ? (
+            <div>
+          <form action="" className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
           className="border border-black w-full rounded-lg px-2 "
           type="text"
@@ -67,6 +80,14 @@ export default function AddPost() {
           Add Post
         </button>
       </form>
+        </div>
+        ) : (
+            <button onClick={() => setIsAdding(true)} className="border border-black rounded-lg px-4 py-2">
+                Add a post
+            </button>
+        )}
+        
+      
     </div>
   );
 }

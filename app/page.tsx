@@ -2,6 +2,7 @@
 import FetchPosts from "@/components/fetchPosts";
 import Navbar from "@/components/nav";
 
+
 export default async function Home() {
   return (
     <div className="flex flex-col">
