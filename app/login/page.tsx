@@ -18,10 +18,11 @@ export default function LoginPage() {
 
     try {
       // 1️⃣ Sign in the user
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
       if (signInError) throw signInError;
 
@@ -32,7 +33,6 @@ export default function LoginPage() {
       }
 
       console.log("User signed in:", data.user.id);
-      
 
       // 2️⃣ Fetch the user's profile
       const { data: profile, error: profileError } = await supabase
@@ -47,24 +47,29 @@ export default function LoginPage() {
         return;
       }
       console.log("User profile:", profile);
-      
 
       // 3️⃣ Redirect based on role
       if (profile.is_admin === true) {
-        router.push(`/admin?userId=${data.user.id}`)
+        router.push(`/admin?userId=${data.user.id}`);
       } else {
         router.push("/");
       }
 
-    } catch (err: any) {
-      setError(err.message || "Something went wrong");
+    } catch (err) {
+      if (err && typeof err === "object" && "message" in err) {
+        setError((err as { message: string }).message);
+      } else {
+        setError("Something went wrong");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", marginTop: "100px" }}>
+    <div
+      style={{ display: "flex", justifyContent: "center", marginTop: "100px" }}
+    >
       <form
         onSubmit={handleLogin}
         style={{
@@ -86,7 +91,11 @@ export default function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          style={{ padding: "10px", borderRadius: "6px", border: "1px solid #ccc" }}
+          style={{
+            padding: "10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
         />
 
         <input
@@ -95,7 +104,11 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          style={{ padding: "10px", borderRadius: "6px", border: "1px solid #ccc" }}
+          style={{
+            padding: "10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
         />
 
         <button
