@@ -1,14 +1,18 @@
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
-type Post = {
+interface Post {
   id: string;
   title: string;
-  content: string;
-  imageUrl: string;
   slug: string;
+  description: string;
+  image: string; // stored public URL or storage path
+  prep_time: number;
+  cook_time: number;
+  ingredients: string[];
+  instructions: string[];
   created_at: string;
-};
+}
 
 export default async function FetchPosts() {
   // fetch posts directly on the server
@@ -41,11 +45,13 @@ export default async function FetchPosts() {
         >
           <img
             className="rounded-t-xl w-full h-48 object-cover"
-            src={post.imageUrl}
+            src={post.image}   // ✅ FIXED: use "image" instead of "imageUrl"
             alt={post.title}
           />
           <div className="flex flex-col items-start p-4">
-            <p className="text-xs text-gray-500">{changeDateFormat(post.created_at)}</p>
+            <p className="text-xs text-gray-500">
+              {changeDateFormat(post.created_at)}
+            </p>
             <h1 className="text-lg font-bold">{post.title}</h1>
           </div>
         </Link>

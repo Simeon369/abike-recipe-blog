@@ -38,7 +38,7 @@ export default function Footer() {
 
       {/* Bottom Text */}
       <div className="mt-6 text-center text-sm text-white">
-        © {new Date().getFullYear()} Abike Recipe <Link href={'/admin'}>Blog</Link>. All rights reserved.
+        © {new Date().getFullYear()} Abike Recipe <Link href={'/login'}>Blog</Link>. All rights reserved.
       </div>
     </footer>
   );

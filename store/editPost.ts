@@ -4,9 +4,13 @@ import { create } from "zustand";
 interface Post {
   id: string;
   title: string;
-  content: string;
-  imageUrl: string;
   slug: string;
+  description: string;
+  image: string; // Supabase Storage URL
+  prepTime: number; // minutes
+  cookTime: number; // minutes
+  ingredients: string[]; // stored as array in DB
+  instructions: string[]; // stored as array in DB
   created_at: string;
 }
 
