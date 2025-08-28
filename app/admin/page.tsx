@@ -1,4 +1,5 @@
 // app/admin/page.tsx  (no 'use client')
+'use client';
 
 import AddPost from "@/components/addpost";
 import Navbar from "@/components/nav";
