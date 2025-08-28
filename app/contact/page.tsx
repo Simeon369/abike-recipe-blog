@@ -1,12 +1,38 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Navbar from "@/components/nav";
+import Footer from "@/components/footer";
 import Button from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textArea";
-import { Mail, Phone, Instagram, Twitter, Facebook } from "lucide-react";
 import Link from "next/link";
-import Footer from "@/components/footer";
+import { FaFacebookF, FaInstagram, FaTwitter, FaWhatsapp, FaTiktok, FaEnvelope, FaPhone, FaYoutube } from "react-icons/fa";
+import { supabase } from "@/lib/supabase";
+
+type Contact = {
+  facebook?: string | null;
+  youtube?: string | null;
+  instagram?: string | null;
+  whatsapp?: string | null;
+  tiktok?: string | null;
+  twitter?: string | null;
+  email?: string | null;
+  phoneNumber?: string | null;
+};
 
 export default function Contact() {
+  const [contact, setContact] = useState<Contact | null>(null);
+
+  useEffect(() => {
+    const fetchContacts = async () => {
+      const { data, error } = await supabase.from("contacts").select("*").single();
+      if (error) console.error("Error fetching contacts:", error);
+      else setContact(data);
+    };
+    fetchContacts();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="w-full">
@@ -44,25 +70,50 @@ export default function Contact() {
 
         {/* Contact Info */}
         <div className="flex flex-col items-center mt-16 gap-3 text-gray-700">
-          <p className="flex items-center gap-2">
-            <Mail className="w-5 h-5" /> abike@example.com
-          </p>
-          <p className="flex items-center gap-2">
-            <Phone className="w-5 h-5" /> +234 800 123 4567
-          </p>
+          {contact?.email && (
+            <p className="flex items-center gap-2">
+              <FaEnvelope /> {contact.email}
+            </p>
+          )}
+          {contact?.phoneNumber && (
+            <p className="flex items-center gap-2">
+              <FaPhone /> {contact.phoneNumber}
+            </p>
+          )}
         </div>
 
         {/* Social Links */}
         <div className="flex gap-6 mt-10">
-          <Link href="https://instagram.com" target="_blank" className="hover:text-pink-500 transition-colors">
-            <Instagram className="w-6 h-6" />
-          </Link>
-          <Link href="https://twitter.com" target="_blank" className="hover:text-blue-500 transition-colors">
-            <Twitter className="w-6 h-6" />
-          </Link>
-          <Link href="https://facebook.com" target="_blank" className="hover:text-blue-700 transition-colors">
-            <Facebook className="w-6 h-6" />
-          </Link>
+          {contact?.instagram && (
+            <Link href={contact.instagram} target="_blank" className="hover:text-pink-500 transition-colors">
+              <FaInstagram size={24} />
+            </Link>
+          )}
+          {contact?.twitter && (
+            <Link href={contact.twitter} target="_blank" className="hover:text-blue-500 transition-colors">
+              <FaTwitter size={24} />
+            </Link>
+          )}
+          {contact?.facebook && (
+            <Link href={contact.facebook} target="_blank" className="hover:text-blue-700 transition-colors">
+              <FaFacebookF size={24} />
+            </Link>
+          )}
+          {contact?.youtube && (
+            <Link href={contact.youtube} target="_blank" className="hover:text-red-600 transition-colors">
+              <FaYoutube size={24} />
+            </Link>
+          )}
+          {contact?.tiktok && (
+            <Link href={contact.tiktok} target="_blank" className="hover:text-black transition-colors">
+              <FaTiktok size={24} />
+            </Link>
+          )}
+          {contact?.whatsapp && (
+            <Link href={`https://wa.me/${contact.whatsapp}`} target="_blank" className="hover:text-green-500 transition-colors">
+              <FaWhatsapp size={24} />
+            </Link>
+          )}
         </div>
       </main>
       <Footer />

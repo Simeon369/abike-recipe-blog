@@ -1,15 +1,45 @@
 // components/Navbar.tsx
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Menu, X } from "lucide-react"
-import Button from "@/components/ui/button" // ✅ correct import
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Menu, X } from "lucide-react";
+import Button from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
+  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
-  const toggleMenu = () => setIsOpen(!isOpen)
+  const toggleMenu = () => setIsOpen(!isOpen);
+
+  useEffect(() => {
+    // Get current session
+    const getSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setUser(data.session?.user ?? null);
+    };
+    getSession();
+
+    // Listen for auth changes
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/")
+    setUser(null);
+  };
 
   return (
     <nav className="w-full shadow-md bg-white fixed top-0 left-0 z-50">
@@ -20,11 +50,45 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex space-x-8">
-          <Link href="/" className="text-gray-700 hover:text-accent">Home</Link>
-          <Link href="/recipes" className="text-gray-700 hover:text-accent">Recipes</Link>
-          <Link href="/about" className="text-gray-700 hover:text-accent">About</Link>
-          <Link href="/contact" className="text-gray-700 hover:text-accent">Contact</Link>
+        <div className="hidden md:flex items-center space-x-8">
+          <Link href="/" className="text-gray-700 hover:text-accent">
+            Home
+          </Link>
+          <Link href="/recipes" className="text-gray-700 hover:text-accent">
+            Recipes
+          </Link>
+          <Link href="/about" className="text-gray-700 hover:text-accent">
+            About
+          </Link>
+          <Link href="/contact" className="text-gray-700 hover:text-accent">
+            Contact
+          </Link>
+
+          {/* Auth Buttons */}
+          <div className="flex items-center space-x-4">
+            {!user ? (
+              <>
+                <Link href="/login">
+                  <Button variant="outline" size="sm">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <Button size="sm" className="bg-accent text-white hover:bg-accent/80">
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <Button
+                size="sm"
+                onClick={handleLogout}
+                className="bg-red-500 text-white hover:bg-red-600"
+              >
+                Logout
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Mobile Menu Button */}
@@ -35,19 +99,56 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Dropdown with animation */}
+      {/* Mobile Dropdown */}
       <div
         className={`md:hidden bg-white shadow-md overflow-hidden transition-all duration-300 ${
-          isOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
+          isOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <div className="flex flex-col space-y-4 px-6 py-4">
-          <Link href="/" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>Home</Link>
-          <Link href="/recipes" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>Recipes</Link>
-          <Link href="/about" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>About</Link>
-          <Link href="/contact" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>Contact</Link>
+          <Link href="/" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>
+            Home
+          </Link>
+          <Link href="/recipes" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>
+            Recipes
+          </Link>
+          <Link href="/about" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>
+            About
+          </Link>
+          <Link href="/contact" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>
+            Contact
+          </Link>
+
+          {/* Auth Buttons (Mobile) */}
+          <div className="flex flex-col space-y-3 pt-4 border-t">
+            {!user ? (
+              <>
+                <Link href="/login" onClick={toggleMenu}>
+                  <Button variant="outline" size="sm" className="w-full">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/signup" onClick={toggleMenu}>
+                  <Button size="sm" className="w-full bg-accent text-white hover:bg-accent/80">
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <Button
+                size="sm"
+                onClick={() => {
+                  handleLogout();
+                  toggleMenu();
+                }}
+                className="w-full bg-red-500 text-white hover:bg-red-600"
+              >
+                Logout
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </nav>
-  )
+  );
 }
