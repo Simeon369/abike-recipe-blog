@@ -7,11 +7,13 @@ import { Menu, X } from "lucide-react";
 import Button from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { User } from '@supabase/supabase-js';
+
 
 export default function Navbar() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+const [user, setUser] = useState<User | null>(null);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
