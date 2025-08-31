@@ -1,32 +1,43 @@
 // app/admin/page.tsx  (no 'use client')
-
+"use client";
 
 import AddPost from "@/components/addpost";
 import Navbar from "@/components/nav";
 import PostsTable from "@/components/adminPostTable";
 import { redirect } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
+
 
 interface Props {
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export default async function AdminPage({ searchParams }: Props) {
-  const userId = searchParams.userId as string | undefined;
+export default function AdminPage() {
+  useEffect(() => {
+    const getSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      console.log("Session data:", session);
 
-  if (!userId) {
-    redirect("/login");
-  }
+      if (!session?.user.id) {
+        redirect("/login");
+      }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_admin")
-    .eq("id", userId)
-    .single();
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_admin")
+        .eq("id", session.user.id)
+        .single();
 
-  if (!profile?.is_admin) {
-    redirect("/");
-  }
+      if (!profile?.is_admin) {
+        redirect("/");
+      }
+    };
+
+    getSession();
+  }, []);
 
   return (
     <div className="flex flex-col items-center md:justify-center min-h-screen py-2">

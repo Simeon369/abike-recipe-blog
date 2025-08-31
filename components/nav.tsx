@@ -1,4 +1,3 @@
-// components/Navbar.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -7,28 +6,53 @@ import { Menu, X } from "lucide-react";
 import Button from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-import { User } from '@supabase/supabase-js';
-
+import { User } from "@supabase/supabase-js";
 
 export default function Navbar() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
   useEffect(() => {
-    // Get current session
     const getSession = async () => {
       const { data } = await supabase.auth.getSession();
-      setUser(data.session?.user ?? null);
+      const currentUser = data.session?.user ?? null;
+      setUser(currentUser);
+
+      if (currentUser) {
+        // check if user is admin
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("id", currentUser.id)
+          .single();
+
+        setIsAdmin(profile?.is_admin === true);
+      }
     };
     getSession();
 
-    // Listen for auth changes
+    // Listen for auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        setUser(session?.user ?? null);
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+
+        if (currentUser) {
+          supabase
+            .from("profiles")
+            .select("is_admin")
+            .eq("id", currentUser.id)
+            .single()
+            .then(({ data: profile }) => {
+              setIsAdmin(profile?.is_admin === true);
+            });
+        } else {
+          setIsAdmin(false);
+        }
       }
     );
 
@@ -39,8 +63,9 @@ const [user, setUser] = useState<User | null>(null);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push("/")
+    router.push("/");
     setUser(null);
+    setIsAdmin(false);
   };
 
   return (
@@ -65,6 +90,13 @@ const [user, setUser] = useState<User | null>(null);
           <Link href="/contact" className="text-gray-700 hover:text-accent">
             Contact
           </Link>
+
+          {/* Show admin link only if admin */}
+          {isAdmin && (
+            <Link href="/admin" className="text-gray-700 hover:text-accent">
+              Admin Dashboard
+            </Link>
+          )}
 
           {/* Auth Buttons */}
           <div className="flex items-center space-x-4">
@@ -120,6 +152,13 @@ const [user, setUser] = useState<User | null>(null);
           <Link href="/contact" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>
             Contact
           </Link>
+
+          {/* Admin link (mobile) */}
+          {isAdmin && (
+            <Link href="/admin" className="text-gray-700 hover:text-accent" onClick={toggleMenu}>
+              Admin Dashboard
+            </Link>
+          )}
 
           {/* Auth Buttons (Mobile) */}
           <div className="flex flex-col space-y-3 pt-4 border-t">

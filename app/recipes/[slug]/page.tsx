@@ -1,8 +1,11 @@
-import { supabase } from "@/lib/supabase";
-import Image from "next/image";
-import { notFound } from "next/navigation";
+"use client";
+
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Clock } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
 interface Post {
   id: string;
@@ -11,32 +14,70 @@ interface Post {
   image: string; // Supabase Storage URL
   prepTime: number; // minutes
   cookTime: number; // minutes
-  ingredients: string[]; // stored as array in DB
-  instructions: string[]; // stored as array in DB
+  ingredients: string[];
+  instructions: string[];
   created_at: string;
 }
 
-type Props = {
-  params: {
-    slug: string;
-  };
-};
+export default function BlogPostPage() {
+  const { slug } = useParams(); // <-- works in client components
+  const [post, setPost] = useState<Post>({
+    id: "",
+    title: "",
+    description: "",
+    image: "",
+    prepTime: 0,
+    cookTime: 0,
+    ingredients: [],
+    instructions: [],
+    created_at: "",
+  });
 
-export default async function BlogPostPage({ params }: Props) {
-  const { slug } = params;
+  useEffect(() => {
+    if (!slug) return;
 
-  // fetch from supabase
-  const { data, error } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("slug", slug)
-    .single<Post>();
+    const fetchPost = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      console.log("Session data:", session);
 
-    console.log(data)
+      if (!session?.user) {
+        redirect("/login");
+      }
 
-  if (error || !data) {
-    return notFound();
-  }
+      const { data, error } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+
+      if (error || !data) {
+        notFound(); // ❌ won't work in client — instead, redirect or show error state
+      } else {
+        setPost(data);
+      }
+    };
+
+    fetchPost();
+  }, [slug]);
+
+  // ✅ Get the current user session
+
+  // if (!session?.user) {
+  //   redirect("/login"); // force login
+  // }
+
+  // // ✅ Check if user is admin or public
+  // const { data: profile } = await supabase
+  //   .from("profiles")
+  //   .select("is_admin, is_public")
+  //   .eq("id", session.user.id)
+  //   .single();
+
+  // if (!profile || (!profile.is_admin && !profile.is_public)) {
+  //   return notFound(); // deny access
+  // }
 
   return (
     <article className="max-w-3xl mx-auto px-6 py-12">
@@ -51,13 +92,12 @@ export default async function BlogPostPage({ params }: Props) {
 
       {/* Title */}
       <h1 className="text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
-        {data.title}
-        
+        {post.title}
       </h1>
 
       {/* Date */}
       <p className="text-sm text-gray-500 mb-8">
-        {new Date(data.created_at).toLocaleDateString("en-US", {
+        {new Date(post.created_at).toLocaleDateString("en-US", {
           year: "numeric",
           month: "long",
           day: "numeric",
@@ -65,11 +105,11 @@ export default async function BlogPostPage({ params }: Props) {
       </p>
 
       {/* Featured image */}
-      {data.image && (
+      {post.image && (
         <div className="mb-10 overflow-hidden rounded-2xl shadow-lg">
           <img
-            src={data.image}
-            alt={data.title}
+            src={post.image}
+            alt={post.title}
             width={1200}
             height={600}
             className="w-full h-auto object-cover"
@@ -78,17 +118,17 @@ export default async function BlogPostPage({ params }: Props) {
       )}
 
       {/* Description */}
-      <p className="text-lg text-gray-700 mb-8">{data.description}</p>
+      <p className="text-lg text-gray-700 mb-8">{post.description}</p>
 
       {/* Prep & Cook Times */}
       <div className="flex items-center gap-6 mb-10 text-gray-700">
         <div className="flex items-center gap-2">
           <Clock className="w-5 h-5 text-accent" />
-          <span>Prep: {data.prepTime} mins</span>
+          <span>Prep: {post.prepTime} mins</span>
         </div>
         <div className="flex items-center gap-2">
           <Clock className="w-5 h-5 text-accent" />
-          <span>Cook: {data.cookTime} mins</span>
+          <span>Cook: {post.cookTime} mins</span>
         </div>
       </div>
 
@@ -96,7 +136,7 @@ export default async function BlogPostPage({ params }: Props) {
       <section className="mb-10">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Ingredients</h2>
         <ul className="list-disc list-inside space-y-2 text-gray-700">
-          {data.ingredients.map((item, idx) => (
+          {post.ingredients.map((item: string, idx: number) => (
             <li key={idx}>{item}</li>
           ))}
         </ul>
@@ -106,7 +146,7 @@ export default async function BlogPostPage({ params }: Props) {
       <section>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Instructions</h2>
         <ol className="list-decimal list-inside space-y-3 text-gray-700 leading-relaxed">
-          {data.instructions.map((step, idx) => (
+          {post.instructions.map((step: string, idx: number) => (
             <li key={idx}>{step}</li>
           ))}
         </ol>
