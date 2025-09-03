@@ -17,9 +17,10 @@ interface Post {
 export default async function FetchPosts() {
   // fetch posts directly on the server
   const { data: posts, error } = await supabase
-    .from("posts")
-    .select("*")
-    .order("created_at", { ascending: false });
+        .from("posts")
+        .select("*")
+        .order("created_at", { ascending: false })
+        
 
   if (error) {
     console.error("Error fetching posts:", error.message);
